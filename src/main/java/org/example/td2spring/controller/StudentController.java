@@ -2,12 +2,10 @@ package org.example.td2spring.controller;
 
 import org.example.td2spring.entity.Student;
 import org.example.td2spring.service.StudentService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 public class StudentController {
@@ -25,7 +23,10 @@ public class StudentController {
     }
 
     @GetMapping("/students")
-    public List<Student> getAllStudents() {
-        return studentService.getAllStudents();
+    public String getAllStudents(@RequestHeader(value = "Accept") String accept) {
+        if (accept.equals("text/plain")) {
+            return studentService.getAllStudents().stream().map(student -> student.getFirstName() + " " + student.getLastName()).collect(Collectors.joining(","));
+        }
+        throw new UnsupportedOperationException("Format non supporté.");
     }
 }
